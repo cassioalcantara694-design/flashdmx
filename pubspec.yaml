@@ -1,0 +1,25 @@
+name: flashdmx_simulator
+description: "Simulador de Patch DMX FlashDMX"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  file_picker: ^8.0.7
+  web: ^1.1.1
+  pdf: ^3.10.8
+  printing: ^5.11.3
+  file_saver: ^0.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
