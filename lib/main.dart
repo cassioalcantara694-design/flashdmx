@@ -16,6 +16,7 @@ class PatchScreen extends StatefulWidget {
 class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int currentUniverse = 1;
+  bool _mostrarPainel = true; // Interruptor para esconder/mostrar o painel
   Map<int, List<Map<String, dynamic>>> patchesPorUniverso = {for (int i = 1; i <= 16; i++) i: []};
   Color _corSelecionada = Colors.white;
 
@@ -24,14 +25,26 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
   final TextEditingController _qty = TextEditingController(text: "10");
   final TextEditingController _off = TextEditingController(text: "24");
   
-  // Valor fixo de segurança para aparelhos (ex: 20 canais)
   final int canaisPorAparelho = 20;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 16, vsync: this);
-    _tabController.addListener(() => setState(() => currentUniverse = _tabController.index + 1));
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        setState(() {
+          currentUniverse = _tabController.index + 1;
+          _mostrarPainel = true; 
+        });
+      }
+    });
+  }
+
+  void _handleTabTap(int index) {
+    if (index + 1 == currentUniverse) {
+      setState(() => _mostrarPainel = !_mostrarPainel);
+    }
   }
 
   void _showMsg(String msg, Color color) {
@@ -85,6 +98,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
         ],
         bottom: TabBar(
           controller: _tabController, isScrollable: true, labelColor: Colors.white, unselectedLabelColor: Colors.grey,
+          onTap: _handleTabTap,
           tabs: List.generate(16, (i) {
             bool temPatch = patchesPorUniverso[i + 1]!.isNotEmpty;
             return Tab(child: Text("U${i + 1}", style: TextStyle(fontWeight: temPatch ? FontWeight.bold : FontWeight.normal)));
@@ -94,7 +108,6 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
       body: LayoutBuilder(builder: (context, constraints) {
         bool isMobile = constraints.maxWidth < 600;
         
-        // Conteúdo do Painel Lateral
         Widget painelControle = Container(
           width: isMobile ? double.infinity : 300,
           color: Colors.grey[900],
@@ -118,7 +131,6 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
           ),
         );
 
-        // Lista de patches
         Widget listaPatches = Expanded(
           child: ListView.builder(
             key: ValueKey(currentUniverse),
@@ -135,7 +147,8 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
           ),
         );
 
-        return isMobile ? Column(children: [painelControle, listaPatches]) : Row(children: [painelControle, listaPatches]);
+        Widget painelExibicao = _mostrarPainel ? painelControle : const SizedBox.shrink();
+        return isMobile ? Column(children: [painelExibicao, listaPatches]) : Row(children: [painelExibicao, listaPatches]);
       }),
     );
   }
