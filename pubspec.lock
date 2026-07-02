@@ -240,6 +240,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  google_mobile_ads:
+    dependency: "direct main"
+    description:
+      name: google_mobile_ads
+      sha256: "6029f6c48bc9b6b47767ddbb4847683048a2f006d418c871bd93c5eb6a8e5c3c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.0.0"
   hooks:
     dependency: transitive
     description:
@@ -280,6 +288,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.9.1"
+  intl:
+    dependency: transitive
+    description:
+      name: intl
+      sha256: "1ca20c894b1717686a2319b8548763d812bc0aabdac580420a44c5178c57a867"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.20.3"
+  jiffy:
+    dependency: transitive
+    description:
+      name: jiffy
+      sha256: cabced5ddea4612f5e0c498df065ee8a1bd810f7ed757db910e95d2aba80161d
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.4.5"
   jni:
     dependency: transitive
     description:
@@ -520,6 +544,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  quiver:
+    dependency: transitive
+    description:
+      name: quiver
+      sha256: ea0b925899e64ecdfbf9c7becb60d5b50e706ade44a85b2363be2a22d88117d2
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.2"
   record_use:
     dependency: transitive
     description:
@@ -621,6 +653,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      sha256: f054f5636c618dbf1a155409d0b5f3e70f8e9beb7ac7a8fdc870653968875e7d
+      url: "https://pub.dev"
+    source: hosted
+    version: "33.2.15"
+  syncfusion_flutter_xlsio:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_xlsio
+      sha256: "0e987a24401a2132a3682a872b330487436e22fcb31f7a4f08d31999dc3d0102"
+      url: "https://pub.dev"
+    source: hosted
+    version: "33.2.15"
+  syncfusion_officecore:
+    dependency: transitive
+    description:
+      name: syncfusion_officecore
+      sha256: "15409ebaae30e5cca39c25cb979019e2fe9c6da9b3b46d5a1d62494ea608faf5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "33.2.15"
   term_glyph:
     dependency: transitive
     description:
@@ -677,6 +733,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  webview_flutter:
+    dependency: transitive
+    description:
+      name: webview_flutter
+      sha256: e4d3474277c5043f5f3100ed27d94ad693abfd5c602b0221c719a4497e4ba1e4
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.14.0"
+  webview_flutter_android:
+    dependency: transitive
+    description:
+      name: webview_flutter_android
+      sha256: a97db7a44f8e71af2f3971c45550a08cce1fb60059c1b8e534251e6cfb753490
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.13.0"
+  webview_flutter_platform_interface:
+    dependency: transitive
+    description:
+      name: webview_flutter_platform_interface
+      sha256: "1221c1b12f5278791042f2ec2841743784cf25c5a644e23d6680e5d718824f04"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.15.1"
+  webview_flutter_wkwebview:
+    dependency: transitive
+    description:
+      name: webview_flutter_wkwebview
+      sha256: c879dd64b87c452aa84381b244d5469da57ba7e8cca6884c7b1e0d406372c12d
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.26.0"
   win32:
     dependency: transitive
     description:
