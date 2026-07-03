@@ -10,8 +10,13 @@ import 'package:csv/csv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xls;
 import 'package:file_picker/file_picker.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-void main() => runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: PatchScreen()));
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
+  runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: PatchScreen()));
+}
 
 class PatchScreen extends StatefulWidget {
   const PatchScreen({super.key});
@@ -23,6 +28,8 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
   late TabController _tabController;
   final DraggableScrollableController _sheetController = DraggableScrollableController();
   ScrollController? _activeScrollController;
+  BannerAd? _bannerAd;
+  bool _bannerLoaded = false;
   int currentUniverse = 1;
   bool _mostrarFormulario = true;
   Map<int, List<Map<String, dynamic>>> patchesPorUniverso = {for (int i = 1; i <= 16; i++) i: []};
@@ -47,6 +54,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
+    _loadBanner();
     _tabController = TabController(length: 16, vsync: this);
     _carregarDados();
     _tabController.addListener(() {
@@ -54,6 +62,28 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
         setState(() => currentUniverse = _tabController.index + 1);
       }
     });
+  }
+
+  void _loadBanner() {
+    _bannerAd = BannerAd(
+      adUnitId: 'ca-app-pub-3940256099942544/6300978111', // ID de Teste do Google
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (_) => setState(() => _bannerLoaded = true),
+        onAdFailedToLoad: (ad, err) {
+          ad.dispose();
+          print('Banner error: $err');
+        },
+      ),
+    )..load();
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    _tabController.dispose();
+    super.dispose();
   }
 
   void _handleTabTap(int index) {
@@ -445,8 +475,11 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                     ),
 
                   DraggableScrollableSheet(
-                    controller: _sheetController, initialChildSize: _mostrarFormulario ? 0.40 : 0.9, minChildSize: _mostrarFormulario ? 0.35 : 0.8, maxChildSize: 0.95,
-                                  builder: (context, scrollController) {
+                    controller: _sheetController,
+                    initialChildSize: _mostrarFormulario ? 0.40 : 0.9, 
+                    minChildSize: _mostrarFormulario ? 0.35 : 0.8,
+                    maxChildSize: 0.95,
+                    builder: (context, scrollController) {
                 _activeScrollController = scrollController;
                 final items = patchesPorUniverso[currentUniverse]!;
                 Map<String, List<Map<String, dynamic>>> agrupados = {};
@@ -488,6 +521,12 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                 ],
               ),
             ),
+            if (_bannerAd != null && _bannerLoaded)
+              SizedBox(
+                width: _bannerAd!.size.width.toDouble(),
+                height: _bannerAd!.size.height.toDouble(),
+                child: AdWidget(ad: _bannerAd!),
+              ),
           ],
         ),
       ),
@@ -498,7 +537,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
     return GestureDetector(
       onTap: press,
       child: Container(
-        margin: const EdgeInsets.only(left: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         height: 44, width: 44, // Aumentado para melhor toque
         decoration: BoxDecoration(
           color: isPdf ? Colors.red : Colors.white10,
