@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xls;
 import 'package:file_picker/file_picker.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -312,16 +313,8 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
     });
 
     String csv = const ListToCsvConverter(fieldDelimiter: ',').convert(rows);
-    String? path = await FilePicker.platform.saveFile(
-      fileName: "patch_professional.csv",
-      type: FileType.custom,
-      allowedExtensions: ['csv'],
-    );
-
-    if (path != null) {
-      await FileSaver.instance.saveFile(name: "patch_professional", bytes: utf8.encode(csv), ext: "csv", mimeType: MimeType.csv);
-      _showMsg("CSV exportado!", Colors.green);
-    }
+    await FileSaver.instance.saveFile(name: "patch_professional", bytes: utf8.encode(csv), ext: "csv", mimeType: MimeType.csv);
+    _showMsg("CSV salvo na pasta Downloads!", Colors.green);
   }
 
   Future<void> _exportarExcel() async {
@@ -348,31 +341,14 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
 
     final List<int> bytes = workbook.saveAsStream();
     workbook.dispose();
-
-    String? path = await FilePicker.platform.saveFile(
-      fileName: "patch_flashdmx.xlsx",
-      type: FileType.custom,
-      allowedExtensions: ['xlsx'],
-    );
-
-    if (path != null) {
-      await FileSaver.instance.saveFile(name: "patch_flashdmx", bytes: Uint8List.fromList(bytes), ext: "xlsx", mimeType: MimeType.microsoftExcel);
-      _showMsg("Excel exportado!", Colors.green);
-    }
+    await FileSaver.instance.saveFile(name: "patch_flashdmx", bytes: Uint8List.fromList(bytes), ext: "xlsx", mimeType: MimeType.microsoftExcel);
+    _showMsg("Excel salvo na pasta Downloads!", Colors.green);
   }
 
   Future<void> _exportarJSON() async {
     String data = jsonEncode(patchesPorUniverso.map((k, v) => MapEntry(k.toString(), v)));
-    String? path = await FilePicker.platform.saveFile(
-      fileName: "backup_flashdmx.json",
-      type: FileType.custom,
-      allowedExtensions: ['json'],
-    );
-
-    if (path != null) {
-      await FileSaver.instance.saveFile(name: "backup_flashdmx", bytes: utf8.encode(data), ext: "json", mimeType: MimeType.json);
-      _showMsg("Backup JSON exportado!", Colors.green);
-    }
+    await FileSaver.instance.saveFile(name: "backup_flashdmx", bytes: utf8.encode(data), ext: "json", mimeType: MimeType.json);
+    _showMsg("Backup JSON salvo na pasta Downloads!", Colors.green);
   }
 
   Future<void> _importarJSON() async {
