@@ -186,15 +186,22 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
         title: const Text("Limpar Tudo?", style: TextStyle(color: Colors.white)),
         content: const Text("Isso apagará o patch de TODOS os 16 universos. Tem certeza?", style: TextStyle(color: Colors.white70)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(c), child: const Text("CANCELAR")),
           TextButton(
+            onPressed: () => Navigator.pop(c), 
+            child: const Text("CANCELAR", style: TextStyle(color: Colors.white70))
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
             onPressed: () {
               setState(() { for (int i = 1; i <= 16; i++) patchesPorUniverso[i] = []; });
               _salvarDados();
               _showMsg("Todos os universos foram limpos!", Colors.red);
               Navigator.pop(c);
             }, 
-            child: const Text("LIMPAR TUDO", style: TextStyle(color: Colors.red))
+            child: const Text("LIMPAR TUDO", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
           ),
         ],
       )
@@ -210,7 +217,19 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
         backgroundColor: Colors.grey[900],
         title: const Text("Nome do Evento", style: TextStyle(color: Colors.white)),
         content: TextField(controller: eventCtrl, style: const TextStyle(color: Colors.white), decoration: _inputStyle("Ex: Festival de Verão")),
-        actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text("GERAR"))],
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10, bottom: 10),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueAccent,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              onPressed: () => Navigator.pop(c), 
+              child: const Text("GERAR", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
+            ),
+          )
+        ],
       )
     );
     evento = eventCtrl.text;

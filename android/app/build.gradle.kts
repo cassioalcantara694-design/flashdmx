@@ -14,7 +14,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.cassiotech.flashdmxpatch"
-    compileSdk = 36 // Alterado para 36 conforme solicitado pelo erro
+    compileSdk = 35 
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -35,7 +35,7 @@ android {
         applicationId = "com.cassiotech.flashdmxpatch"
 
         minSdk = flutter.minSdkVersion // Valor compatível com a maioria dos dispositivos atuais
-        targetSdk = 36 // Alterado para 36
+        targetSdk = 35
 
         versionCode = flutter.versionCode
         versionName = flutter.versionName
