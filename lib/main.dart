@@ -401,16 +401,23 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
   Widget _outlinedRedBtn(IconData icon, String label, VoidCallback tap) => OutlinedButton(
     onPressed: tap,
     style: OutlinedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
       side: const BorderSide(color: Colors.redAccent, width: 1.2),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     ),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, color: Colors.redAccent, size: 18),
-        const SizedBox(height: 4),
-        Text(label, style: const TextStyle(color: Colors.redAccent, fontSize: 8, fontWeight: FontWeight.bold)),
+        Icon(icon, color: Colors.redAccent, size: 16),
+        const SizedBox(width: 6),
+        Flexible(
+          child: Text(
+            label, 
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: Colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold)
+          ),
+        ),
       ],
     ),
   );
@@ -490,7 +497,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                               fieldViewBuilder: (ctx, ctrl, fn, sub) {
                                 if (ctrl.text.isEmpty) ctrl.text = _nome.text;
                                 ctrl.addListener(() => _nome.text = ctrl.text.toUpperCase());
-                                return TextField(controller: ctrl, focusNode: fn, style: const TextStyle(color: Colors.white), decoration: _inputStyle("Aparelho").copyWith(suffixIcon: const Icon(Icons.arrow_drop_down, color: Colors.grey)));
+                                return TextField(controller: ctrl, focusNode: fn, style: const TextStyle(color: Colors.white), decoration: _inputStyle(_t("Aparelho", "Fixture")).copyWith(suffixIcon: const Icon(Icons.arrow_drop_down, color: Colors.grey)));
                               },
                             )),
                             const SizedBox(width: 15),
@@ -506,19 +513,19 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                           ]),
                           const SizedBox(height: 20),
                           Row(children: [
-                            Expanded(child: _SeletorInteligente(controller: _start, label: "Endereço Inicial")),
+                            Expanded(child: _SeletorInteligente(controller: _start, label: _t("Endereço Inicial", "Start Address"))),
                             const SizedBox(width: 20),
                             Expanded(child: _SeletorInteligente(
                               controller: _id, 
-                              label: "ID Inicial",
+                              label: _t("ID Inicial", "Start ID"),
                               presets: const [1, 101, 201, 301, 401, 501, 601, 701, 801, 901, 1001, 2001, 3001, 4001, 5001, 6001, 7001, 8001, 9001],
                             )),
                           ]),
                           const SizedBox(height: 20),
                           Row(children: [
-                            Expanded(child: _SeletorInteligente(controller: _qty, label: "Quantidade")),
+                            Expanded(child: _SeletorInteligente(controller: _qty, label: _t("Quantidade", "Quantity"))),
                             const SizedBox(width: 20),
-                            Expanded(child: _SeletorInteligente(controller: _off, label: "Offset / Channel")),
+                            Expanded(child: _SeletorInteligente(controller: _off, label: _t("Offset / Channel", "Offset / Channel"))),
                           ]),
                           const SizedBox(height: 30),
                           SizedBox(width: double.infinity, height: 55, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))), onPressed: _executar, child: Text(_t("ADICIONAR APARELHOS", "ADD FIXTURES"), style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)))),
@@ -693,27 +700,30 @@ class _SeletorInteligenteState extends State<_SeletorInteligente> {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(widget.label, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-          if (widget.presets != null)
-            Theme(
-              data: Theme.of(context).copyWith(cardColor: Colors.grey[900]),
-              child: PopupMenuButton<int>(
-                padding: EdgeInsets.zero,
-                color: Colors.grey[900],
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Colors.white10)),
-                icon: const Icon(Icons.tune, color: Colors.blueAccent, size: 16),
-                onSelected: (val) => widget.controller.text = val.toString(),
-                itemBuilder: (context) => widget.presets!.map((p) => PopupMenuItem(
-                  value: p,
-                  height: 35,
-                  child: Text("ID $p", style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
-                )).toList(),
+      SizedBox(
+        height: 35, // Altura fixa para garantir alinhamento das caixas abaixo
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(widget.label, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+            if (widget.presets != null)
+              Theme(
+                data: Theme.of(context).copyWith(cardColor: Colors.grey[900]),
+                child: PopupMenuButton<int>(
+                  padding: EdgeInsets.zero,
+                  color: Colors.grey[900],
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Colors.white10)),
+                  icon: const Icon(Icons.tune, color: Colors.blueAccent, size: 16),
+                  onSelected: (val) => widget.controller.text = val.toString(),
+                  itemBuilder: (context) => widget.presets!.map((p) => PopupMenuItem(
+                    value: p,
+                    height: 35,
+                    child: Text("ID $p", style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                  )).toList(),
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
       const SizedBox(height: 4),
       Container(
