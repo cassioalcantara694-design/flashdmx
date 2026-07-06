@@ -60,7 +60,10 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
     _carregarDados();
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
-        setState(() => currentUniverse = _tabController.index + 1);
+        setState(() {
+          currentUniverse = _tabController.index + 1;
+          _start.text = "1"; // Reseta para 1 ao deslizar entre universos
+        });
       }
     });
   }
@@ -95,6 +98,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
       setState(() {
         currentUniverse = index + 1;
         _mostrarFormulario = true;
+        _start.text = "1"; // Reseta o endereço inicial para 1 ao mudar de universo
       });
     }
     
