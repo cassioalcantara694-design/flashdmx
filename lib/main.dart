@@ -684,6 +684,8 @@ class _SeletorInteligenteState extends State<_SeletorInteligente> {
               data: Theme.of(context).copyWith(cardColor: Colors.grey[900]),
               child: PopupMenuButton<int>(
                 padding: EdgeInsets.zero,
+                color: Colors.grey[900],
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Colors.white10)),
                 icon: const Icon(Icons.tune, color: Colors.blueAccent, size: 16),
                 onSelected: (val) => widget.controller.text = val.toString(),
                 itemBuilder: (context) => widget.presets!.map((p) => PopupMenuItem(
