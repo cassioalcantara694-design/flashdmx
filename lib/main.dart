@@ -347,7 +347,8 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
 
   Future<void> _exportarJSON() async {
     String data = jsonEncode(patchesPorUniverso.map((k, v) => MapEntry(k.toString(), v)));
-    await FileSaver.instance.saveFile(name: "backup_flashdmx", bytes: utf8.encode(data), ext: "json", mimeType: MimeType.json);
+    // Usando MimeType.other para forçar o Android a salvar e mostrar o arquivo sem restrições
+    await FileSaver.instance.saveFile(name: "backup_flashdmx", bytes: Uint8List.fromList(utf8.encode(data)), ext: "json", mimeType: MimeType.other);
     _showMsg("Backup JSON salvo na pasta Downloads!", Colors.green);
   }
 
