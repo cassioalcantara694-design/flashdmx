@@ -67,7 +67,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
 
   void _loadBanner() {
     _bannerAd = BannerAd(
-      adUnitId: 'ca-app-pub-3940256099942544/6300978111', // ID de Teste do Google
+      adUnitId: 'ca-app-pub-6682799338427099/4616732542', // Seu ID Real de Produção
       size: AdSize.banner,
       request: const AdRequest(),
       listener: BannerAdListener(
