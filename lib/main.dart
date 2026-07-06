@@ -387,6 +387,23 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
     onTap: tap,
   );
 
+  Widget _outlinedRedBtn(IconData icon, String label, VoidCallback tap) => OutlinedButton(
+    onPressed: tap,
+    style: OutlinedButton.styleFrom(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      side: const BorderSide(color: Colors.redAccent, width: 1.2),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: Colors.redAccent, size: 18),
+        const SizedBox(height: 4),
+        Text(label, style: const TextStyle(color: Colors.redAccent, fontSize: 8, fontWeight: FontWeight.bold)),
+      ],
+    ),
+  );
+
   InputDecoration _inputStyle(String label) => InputDecoration(
     labelText: label, labelStyle: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -492,9 +509,21 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                           SizedBox(width: double.infinity, height: 55, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))), onPressed: _executar, child: const Text("ADICIONAR APARELHOS", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)))),
                           const SizedBox(height: 15),
                           Row(children: [
-                            Expanded(child: OutlinedButton.icon(onPressed: () { setState(() => patchesPorUniverso[currentUniverse]!.clear()); _salvarDados(); }, icon: const Icon(Icons.delete_sweep, color: Colors.redAccent, size: 18), label: Text("LIMPAR U$currentUniverse", style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 11)), style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.redAccent), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25))))),
-                            const SizedBox(width: 10),
-                            Expanded(child: OutlinedButton.icon(onPressed: _confirmarLimparTudo, icon: const Icon(Icons.delete_forever, color: Colors.red, size: 18), label: const Text("LIMPAR TUDO", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 11)), style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.red), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25))))),
+                            Expanded(child: _outlinedRedBtn(Icons.undo, "CLEAR LAST", () {
+                              if (patchesPorUniverso[currentUniverse]!.isNotEmpty) {
+                                setState(() {
+                                  patchesPorUniverso[currentUniverse]!.removeLast();
+                                  _salvarDados();
+                                });
+                              }
+                            })),
+                            const SizedBox(width: 8),
+                            Expanded(child: _outlinedRedBtn(Icons.delete_sweep, "CLEAR UNIVERSE", () {
+                              setState(() => patchesPorUniverso[currentUniverse]!.clear());
+                              _salvarDados();
+                            })),
+                            const SizedBox(width: 8),
+                            Expanded(child: _outlinedRedBtn(Icons.delete_forever, "CLEAR ALL", _confirmarLimparTudo)),
                           ]),
                         ]),
                       ),
