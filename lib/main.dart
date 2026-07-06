@@ -526,8 +526,13 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                                   controller: ctrl, 
                                   focusNode: fn, 
                                   style: const TextStyle(color: Colors.white), 
-                                  onChanged: (v) => _nome.text = v.toUpperCase(),
-                                  onEditingComplete: sub,
+                                  onChanged: (v) {
+                                    _nome.text = v.toUpperCase();
+                                  },
+                                  onEditingComplete: () {
+                                    sub();
+                                    FocusScope.of(context).unfocus();
+                                  },
                                   decoration: _inputStyle(_t("Aparelho", "Fixture")).copyWith(
                                     suffixIcon: const Icon(Icons.arrow_drop_down, color: Colors.grey)
                                   ),
@@ -536,7 +541,10 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                             )),
                             const SizedBox(width: 15),
                             GestureDetector(
-                              onTap: () => _escolherCor(),
+                              onTap: () {
+                                FocusScope.of(context).unfocus(); // Fecha tudo antes de abrir a cor
+                                _escolherCor();
+                              },
                               child: Container(
                                 width: 46, height: 46,
                                 decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 1.5)),
@@ -739,6 +747,7 @@ class _SeletorInteligenteState extends State<_SeletorInteligente> {
                   color: Colors.grey[900],
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Colors.white10)),
                   icon: const Icon(Icons.tune, color: Colors.blueAccent, size: 16),
+                  onOpened: () => FocusScope.of(context).unfocus(), // Fecha tudo ao abrir o menu
                   onSelected: (val) {
                   widget.controller.text = val.toString();
                   FocusScope.of(context).unfocus(); // Garante que o teclado não abra em outro lugar
