@@ -449,8 +449,23 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
-          title: Image.asset('assets/logo.png', height: 35),
-          centerTitle: true,
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset('assets/logo.png', height: 28),
+              const SizedBox(width: 8),
+              RichText(
+                text: const TextSpan(
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, letterSpacing: 1.1),
+                  children: [
+                    TextSpan(text: "FLASH ", style: TextStyle(color: Colors.white)),
+                    TextSpan(text: "DMX", style: TextStyle(color: Colors.blueAccent)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          centerTitle: false,
           backgroundColor: Colors.black,
           elevation: 0,
           actions: [
