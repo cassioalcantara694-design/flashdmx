@@ -497,7 +497,11 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                           Row(children: [
                             Expanded(child: _SeletorInteligente(controller: _start, label: "Endereço Inicial")),
                             const SizedBox(width: 20),
-                            Expanded(child: _SeletorInteligente(controller: _id, label: "ID Inicial")),
+                            Expanded(child: _SeletorInteligente(
+                              controller: _id, 
+                              label: "ID Inicial",
+                              presets: const [1, 101, 201, 301, 401, 501, 601, 701, 801, 901, 1001, 2001, 3001, 4001, 5001, 6001, 7001, 8001, 9001],
+                            )),
                           ]),
                           const SizedBox(height: 20),
                           Row(children: [
@@ -652,7 +656,8 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
 class _SeletorInteligente extends StatefulWidget {
   final TextEditingController controller;
   final String label;
-  const _SeletorInteligente({required this.controller, required this.label});
+  final List<int>? presets;
+  const _SeletorInteligente({required this.controller, required this.label, this.presets});
   @override
   State<_SeletorInteligente> createState() => _SeletorInteligenteState();
 }
@@ -670,7 +675,26 @@ class _SeletorInteligenteState extends State<_SeletorInteligente> {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(widget.label, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(widget.label, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+          if (widget.presets != null)
+            Theme(
+              data: Theme.of(context).copyWith(cardColor: Colors.grey[900]),
+              child: PopupMenuButton<int>(
+                padding: EdgeInsets.zero,
+                icon: const Icon(Icons.tune, color: Colors.blueAccent, size: 16),
+                onSelected: (val) => widget.controller.text = val.toString(),
+                itemBuilder: (context) => widget.presets!.map((p) => PopupMenuItem(
+                  value: p,
+                  height: 35,
+                  child: Text("ID $p", style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                )).toList(),
+              ),
+            ),
+        ],
+      ),
       const SizedBox(height: 4),
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 4),
