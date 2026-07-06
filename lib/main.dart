@@ -191,12 +191,12 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
       context: context,
       builder: (c) => AlertDialog(
         backgroundColor: Colors.grey[900],
-        title: const Text("Limpar Tudo?", style: TextStyle(color: Colors.white)),
-        content: const Text("Isso apagará o patch de TODOS os 16 universos. Tem certeza?", style: TextStyle(color: Colors.white70)),
+        title: Text(_t("Limpar Tudo?", "Clear All?"), style: const TextStyle(color: Colors.white)),
+        content: Text(_t("Isso apagará o patch de TODOS os 16 universos. Tem certeza?", "This will clear the patch of ALL 16 universes. Are you sure?"), style: const TextStyle(color: Colors.white70)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c), 
-            child: const Text("CANCELAR", style: TextStyle(color: Colors.white70))
+            child: Text(_t("CANCELAR", "CANCEL"), style: const TextStyle(color: Colors.white70))
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -206,10 +206,10 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
             onPressed: () {
               setState(() { for (int i = 1; i <= 16; i++) patchesPorUniverso[i] = []; });
               _salvarDados();
-              _showMsg("Todos os universos foram limpos!", Colors.red);
+              _showMsg(_t("Todos os universos foram limpos!", "All universes have been cleared!"), Colors.red);
               Navigator.pop(c);
             }, 
-            child: const Text("LIMPAR TUDO", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
+            child: Text(_t("LIMPAR TUDO", "CLEAR ALL"), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
           ),
         ],
       )
@@ -223,8 +223,8 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
       context: context,
       builder: (c) => AlertDialog(
         backgroundColor: Colors.grey[900],
-        title: const Text("Nome do Evento", style: TextStyle(color: Colors.white)),
-        content: TextField(controller: eventCtrl, style: const TextStyle(color: Colors.white), decoration: _inputStyle("Ex: Festival de Verão")),
+        title: Text(_t("Nome do Evento", "Event Name"), style: const TextStyle(color: Colors.white)),
+        content: TextField(controller: eventCtrl, style: const TextStyle(color: Colors.white), decoration: _inputStyle(_t("Ex: Festival de Verão", "Ex: Summer Festival"))),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10, bottom: 10),
@@ -234,7 +234,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
               onPressed: () => Navigator.pop(c), 
-              child: const Text("GERAR", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
+              child: Text(_t("GERAR", "GENERATE"), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
             ),
           )
         ],
@@ -415,7 +415,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
             label, 
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: Colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold)
+            style: const TextStyle(color: Colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold)
           ),
         ),
       ],
@@ -423,7 +423,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
   );
 
   InputDecoration _inputStyle(String label) => InputDecoration(
-    labelText: label, labelStyle: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+    labelText: label, labelStyle: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
     enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white24)),
     focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.blueAccent, width: 2)),
@@ -458,9 +458,9 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
               decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(15)),
               child: Column(
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 8),
-                    child: Text("PATCH UNIVERSOS [1-16]", style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(_t("PATCH UNIVERSOS [1-16]", "PATCH UNIVERSES [1-16]"), style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
                   ),
                   Row(
                     children: [
@@ -552,7 +552,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                   child: Column(children: [
                     const SizedBox(height: 12),
                     Container(width: 60, height: 5, decoration: BoxDecoration(color: Colors.grey[700], borderRadius: BorderRadius.circular(10))),
-                    Padding(padding: const EdgeInsets.symmetric(vertical: 15), child: Text("PATCH - UNIVERSO $currentUniverse", style: const TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 2))),
+                    Padding(padding: const EdgeInsets.symmetric(vertical: 15), child: Text(_t("PATCH - UNIVERSO $currentUniverse", "PATCH - UNIVERSE $currentUniverse"), style: const TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 2))),
                     Expanded(child: ListView.builder(controller: scrollController, padding: const EdgeInsets.fromLTRB(15, 0, 15, 40), itemCount: agrupados.length, itemBuilder: (context, idx) {
                       String base = agrupados.keys.elementAt(idx);
                       List<Map<String, dynamic>> fixtures = agrupados[base]!;
