@@ -493,11 +493,25 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                           Row(children: [
                             Expanded(child: Autocomplete<String>(
                               optionsBuilder: (val) => val.text.isEmpty ? _opcoesNomes : _opcoesNomes.where((opt) => opt.contains(val.text.toUpperCase())),
-                              onSelected: (sel) => _nome.text = sel,
+                              onSelected: (sel) {
+                                _nome.text = sel;
+                                FocusScope.of(context).unfocus(); // Fecha o teclado ao selecionar
+                              },
                               fieldViewBuilder: (ctx, ctrl, fn, sub) {
                                 if (ctrl.text.isEmpty) ctrl.text = _nome.text;
-                                ctrl.addListener(() => _nome.text = ctrl.text.toUpperCase());
-                                return TextField(controller: ctrl, focusNode: fn, style: const TextStyle(color: Colors.white), decoration: _inputStyle(_t("Aparelho", "Fixture")).copyWith(suffixIcon: const Icon(Icons.arrow_drop_down, color: Colors.grey)));
+                                // Sincroniza o texto digitado com a variável global, mas sem travar a seleção
+                                ctrl.addListener(() {
+                                  if (ctrl.text != _nome.text) _nome.text = ctrl.text.toUpperCase();
+                                });
+                                return TextField(
+                                  controller: ctrl, 
+                                  focusNode: fn, 
+                                  style: const TextStyle(color: Colors.white), 
+                                  onEditingComplete: sub, // Confirma ao dar OK no teclado
+                                  decoration: _inputStyle(_t("Aparelho", "Fixture")).copyWith(
+                                    suffixIcon: const Icon(Icons.arrow_drop_down, color: Colors.grey)
+                                  ),
+                                );
                               },
                             )),
                             const SizedBox(width: 15),
