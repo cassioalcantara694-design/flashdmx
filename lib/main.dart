@@ -33,9 +33,12 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
   bool _bannerLoaded = false;
   int currentUniverse = 1;
   bool _mostrarFormulario = true;
+  bool _isEnglish = false;
   Map<int, List<Map<String, dynamic>>> patchesPorUniverso = {for (int i = 1; i <= 16; i++) i: []};
   Color _corSelecionada = Colors.white;
   List<int> _idsRecemAdicionados = []; // Para o efeito de flash
+
+  String _t(String pt, String en) => _isEnglish ? en : pt;
 
   final TextEditingController _nome = TextEditingController(text: "DIMMER");
   final TextEditingController _start = TextEditingController(text: "1");
@@ -376,10 +379,14 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
       builder: (c) => Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          _menuItem(Icons.table_chart, "CSV (Planilha)", () { Navigator.pop(c); _exportarCSV(); }),
+          _menuItem(Icons.language, _t("Idioma: Português", "Language: English"), () {
+            setState(() => _isEnglish = !_isEnglish);
+            Navigator.pop(c);
+          }),
+          _menuItem(Icons.table_chart, _t("CSV (Planilha)", "CSV (Spreadsheet)"), () { Navigator.pop(c); _exportarCSV(); }),
           _menuItem(Icons.table_view, "Excel (XLSX)", () { Navigator.pop(c); _exportarExcel(); }),
-          _menuItem(Icons.backup, "Exportar Backup (JSON)", () { Navigator.pop(c); _exportarJSON(); }),
-          _menuItem(Icons.restore, "Importar Backup (JSON)", () { Navigator.pop(c); _importarJSON(); }),
+          _menuItem(Icons.backup, _t("Exportar Backup (JSON)", "Export Backup (JSON)"), () { Navigator.pop(c); _exportarJSON(); }),
+          _menuItem(Icons.restore, _t("Importar Backup (JSON)", "Import Backup (JSON)"), () { Navigator.pop(c); _importarJSON(); }),
         ]),
       )
     );
@@ -514,33 +521,16 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                             Expanded(child: _SeletorInteligente(controller: _off, label: "Offset / Channel")),
                           ]),
                           const SizedBox(height: 30),
-                          SizedBox(width: double.infinity, height: 55, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))), onPressed: _executar, child: const Text("ADICIONAR APARELHOS", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)))),
+                          SizedBox(width: double.infinity, height: 55, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))), onPressed: _executar, child: Text(_t("ADICIONAR APARELHOS", "ADD FIXTURES"), style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)))),
                           const SizedBox(height: 15),
-                          Row(children: [
-                            Expanded(child: _outlinedRedBtn(Icons.undo, "CLEAR LAST", () {
-                              if (patchesPorUniverso[currentUniverse]!.isNotEmpty) {
-                                setState(() {
-                                  patchesPorUniverso[currentUniverse]!.removeLast();
-                                  _salvarDados();
-                                });
-                              }
-                            })),
-                            const SizedBox(width: 8),
-                            Expanded(child: _outlinedRedBtn(Icons.delete_sweep, "CLEAR UNIVERSE", () {
-                              setState(() => patchesPorUniverso[currentUniverse]!.clear());
-                              _salvarDados();
-                            })),
-                            const SizedBox(width: 8),
-                            Expanded(child: _outlinedRedBtn(Icons.delete_forever, "CLEAR ALL", _confirmarLimparTudo)),
-                          ]),
                         ]),
                       ),
                     ),
 
                   DraggableScrollableSheet(
                     controller: _sheetController,
-                    initialChildSize: _mostrarFormulario ? 0.35 : 0.9, 
-                    minChildSize: _mostrarFormulario ? 0.30 : 0.8,
+                    initialChildSize: _mostrarFormulario ? 0.30 : 0.9, 
+                    minChildSize: _mostrarFormulario ? 0.25 : 0.8,
                     maxChildSize: 0.95,
                     builder: (context, scrollController) {
                 _activeScrollController = scrollController;
@@ -584,6 +574,30 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                 ],
               ),
             ),
+            
+            // Rodapé com botões de Limpeza
+            Container(
+              padding: const EdgeInsets.fromLTRB(15, 10, 15, 20),
+              color: Colors.black,
+              child: Row(children: [
+                Expanded(child: _outlinedRedBtn(Icons.undo, _t("APAGAR ÚLTIMO", "CLEAR LAST"), () {
+                  if (patchesPorUniverso[currentUniverse]!.isNotEmpty) {
+                    setState(() {
+                      patchesPorUniverso[currentUniverse]!.removeLast();
+                      _salvarDados();
+                    });
+                  }
+                })),
+                const SizedBox(width: 8),
+                Expanded(child: _outlinedRedBtn(Icons.delete_sweep, _t("LIMPAR UNIVERSO", "CLEAR UNIVERSE"), () {
+                  setState(() => patchesPorUniverso[currentUniverse]!.clear());
+                  _salvarDados();
+                })),
+                const SizedBox(width: 8),
+                Expanded(child: _outlinedRedBtn(Icons.delete_forever, _t("LIMPAR TUDO", "CLEAR ALL"), _confirmarLimparTudo)),
+              ]),
+            ),
+
             if (_bannerAd != null && _bannerLoaded)
               SizedBox(
                 width: _bannerAd!.size.width.toDouble(),
