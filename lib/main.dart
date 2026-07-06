@@ -724,7 +724,10 @@ class _SeletorInteligenteState extends State<_SeletorInteligente> {
                   color: Colors.grey[900],
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Colors.white10)),
                   icon: const Icon(Icons.tune, color: Colors.blueAccent, size: 16),
-                  onSelected: (val) => widget.controller.text = val.toString(),
+                  onSelected: (val) {
+                  widget.controller.text = val.toString();
+                  FocusScope.of(context).unfocus(); // Garante que o teclado não abra em outro lugar
+                },
                   itemBuilder: (context) => widget.presets!.map((p) => PopupMenuItem(
                     value: p,
                     height: 35,
