@@ -449,13 +449,8 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
-          title: Row(
-            children: [
-              Image.asset('assets/logo.png', height: 30),
-              const SizedBox(width: 10),
-              const Text("FLASH DMX", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22, letterSpacing: 1.2)),
-            ],
-          ),
+          title: Image.asset('assets/logo.png', height: 35),
+          centerTitle: true,
           backgroundColor: Colors.black,
           elevation: 0,
           actions: [
@@ -508,19 +503,16 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                               optionsBuilder: (val) => val.text.isEmpty ? _opcoesNomes : _opcoesNomes.where((opt) => opt.contains(val.text.toUpperCase())),
                               onSelected: (sel) {
                                 _nome.text = sel;
-                                FocusScope.of(context).unfocus(); // Fecha o teclado ao selecionar
+                                FocusScope.of(context).unfocus(); 
                               },
                               fieldViewBuilder: (ctx, ctrl, fn, sub) {
                                 if (ctrl.text.isEmpty) ctrl.text = _nome.text;
-                                // Sincroniza o texto digitado com a variável global, mas sem travar a seleção
-                                ctrl.addListener(() {
-                                  if (ctrl.text != _nome.text) _nome.text = ctrl.text.toUpperCase();
-                                });
                                 return TextField(
                                   controller: ctrl, 
                                   focusNode: fn, 
                                   style: const TextStyle(color: Colors.white), 
-                                  onEditingComplete: sub, // Confirma ao dar OK no teclado
+                                  onChanged: (v) => _nome.text = v.toUpperCase(),
+                                  onEditingComplete: sub,
                                   decoration: _inputStyle(_t("Aparelho", "Fixture")).copyWith(
                                     suffixIcon: const Icon(Icons.arrow_drop_down, color: Colors.grey)
                                   ),
@@ -614,15 +606,6 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
               padding: const EdgeInsets.fromLTRB(15, 10, 15, 20),
               color: Colors.black,
               child: Row(children: [
-                Expanded(child: _outlinedRedBtn(Icons.undo, _t("APAGAR ÚLTIMO", "CLEAR LAST"), () {
-                  if (patchesPorUniverso[currentUniverse]!.isNotEmpty) {
-                    setState(() {
-                      patchesPorUniverso[currentUniverse]!.removeLast();
-                      _salvarDados();
-                    });
-                  }
-                })),
-                const SizedBox(width: 8),
                 Expanded(child: _outlinedRedBtn(Icons.delete_sweep, _t("LIMPAR UNIVERSO", "CLEAR UNIVERSE"), () {
                   setState(() => patchesPorUniverso[currentUniverse]!.clear());
                   _salvarDados();
