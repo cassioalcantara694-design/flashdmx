@@ -65,7 +65,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
       if (!_tabController.indexIsChanging) {
         setState(() {
           currentUniverse = _tabController.index + 1;
-          _start.text = "1"; // Reseta para 1 ao deslizar entre universos
+          _start.text = _getSugestaoEndereco(currentUniverse).toString();
         });
       }
     });
@@ -101,7 +101,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
       setState(() {
         currentUniverse = index + 1;
         _mostrarFormulario = true;
-        _start.text = "1"; // Reseta o endereço inicial para 1 ao mudar de universo
+        _start.text = _getSugestaoEndereco(currentUniverse).toString();
       });
     }
     
@@ -112,6 +112,18 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
         _sheetController.animateTo(0.35, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
       }
     });
+  }
+
+  int _getSugestaoEndereco(int universo) {
+    final items = patchesPorUniverso[universo];
+    if (items == null || items.isEmpty) return 1;
+    int maxOcupado = 0;
+    for (var item in items) {
+      int inicio = item['inicio'] as int;
+      int offset = item['offset'] as int? ?? 1;
+      if (inicio + offset > maxOcupado) maxOcupado = inicio + offset;
+    }
+    return maxOcupado > 512 ? 512 : (maxOcupado == 0 ? 1 : maxOcupado);
   }
 
   Future<void> _salvarDados() async {
@@ -154,7 +166,8 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
           "id_unico": DateTime.now().millisecondsSinceEpoch + i, // ID temporário para animação
           "nome": "${_nome.text.toUpperCase()} ID ${fixtureId + i}",
           "inicio": start,
-          "cor": _corSelecionada.toARGB32()
+          "cor": _corSelecionada.toARGB32(),
+          "offset": off, // Salva o offset para calcular o próximo canal livre
         };
         
         patchesPorUniverso[currentUniverse]!.add(novoItem);
