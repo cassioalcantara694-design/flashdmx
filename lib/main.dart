@@ -401,13 +401,18 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
-          title: const Text("FLASH DMX", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22, letterSpacing: 1.2)),
+          title: Row(
+            children: [
+              Image.asset('assets/logo.png', height: 30),
+              const SizedBox(width: 10),
+              const Text("FLASH DMX", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22, letterSpacing: 1.2)),
+            ],
+          ),
           backgroundColor: Colors.black,
           elevation: 0,
           actions: [
             _actionBtn(Icons.picture_as_pdf, _exportarPDF, isPdf: true),
-            _actionBtn(Icons.exit_to_app, _importarJSON),
-            _actionBtn(Icons.more_horiz, _abrirMenuMais),
+            _actionBtn(Icons.settings, _abrirMenuMais),
             const SizedBox(width: 15),
           ],
         ),
