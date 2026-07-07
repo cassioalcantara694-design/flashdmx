@@ -66,6 +66,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
         setState(() {
           currentUniverse = _tabController.index + 1;
           _start.text = _getSugestaoEndereco(currentUniverse).toString();
+          _id.text = _getSugestaoID(currentUniverse).toString();
         });
       }
     });
@@ -102,6 +103,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
         currentUniverse = index + 1;
         _mostrarFormulario = true;
         _start.text = _getSugestaoEndereco(currentUniverse).toString();
+        _id.text = _getSugestaoID(currentUniverse).toString();
       });
     }
     
@@ -124,6 +126,22 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
       if (inicio + offset > maxOcupado) maxOcupado = inicio + offset;
     }
     return maxOcupado > 512 ? 512 : (maxOcupado == 0 ? 1 : maxOcupado);
+  }
+
+  int _getSugestaoID(int universo) {
+    final items = patchesPorUniverso[universo];
+    int baseId = universo * 100 + 1;
+    if (items == null || items.isEmpty) return baseId;
+
+    int maxId = 0;
+    for (var item in items) {
+      String nome = item['nome'] as String;
+      if (nome.contains(" ID ")) {
+        int? id = int.tryParse(nome.split(" ID ").last);
+        if (id != null && id > maxId) maxId = id;
+      }
+    }
+    return maxId == 0 ? baseId : maxId + 1;
   }
 
   Future<void> _salvarDados() async {
@@ -560,7 +578,6 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                             Expanded(child: _SeletorInteligente(
                               controller: _id, 
                               label: _t("ID Inicial", "Start ID"),
-                              presets: const [1, 101, 201, 301, 401, 501, 601, 701, 801, 901, 1001, 2001, 3001, 4001, 5001, 6001, 7001, 8001, 9001],
                             )),
                           ]),
                           const SizedBox(height: 20),
@@ -733,36 +750,35 @@ class _SeletorInteligenteState extends State<_SeletorInteligente> {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      SizedBox(
-        height: 35, // Altura fixa para garantir alinhamento das caixas abaixo
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(widget.label, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-            if (widget.presets != null)
-              Theme(
-                data: Theme.of(context).copyWith(cardColor: Colors.grey[900]),
-                child: PopupMenuButton<int>(
-                  padding: EdgeInsets.zero,
-                  color: Colors.grey[900],
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Colors.white10)),
-                  icon: const Icon(Icons.tune, color: Colors.blueAccent, size: 16),
-                  onOpened: () => FocusScope.of(context).unfocus(), // Fecha tudo ao abrir o menu
-                  onSelected: (val) {
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4, left: 2),
+            child: Text(widget.label, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+          ),
+          if (widget.presets != null)
+            Theme(
+              data: Theme.of(context).copyWith(cardColor: Colors.grey[900]),
+              child: PopupMenuButton<int>(
+                padding: EdgeInsets.zero,
+                color: Colors.grey[900],
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Colors.white10)),
+                icon: const Icon(Icons.tune, color: Colors.blueAccent, size: 16),
+                onOpened: () => FocusScope.of(context).unfocus(), // Fecha tudo ao abrir o menu
+                onSelected: (val) {
                   widget.controller.text = val.toString();
                   FocusScope.of(context).unfocus(); // Garante que o teclado não abra em outro lugar
                 },
-                  itemBuilder: (context) => widget.presets!.map((p) => PopupMenuItem(
-                    value: p,
-                    height: 35,
-                    child: Text("ID $p", style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
-                  )).toList(),
-                ),
+                itemBuilder: (context) => widget.presets!.map((p) => PopupMenuItem(
+                  value: p,
+                  height: 35,
+                  child: Text("ID $p", style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                )).toList(),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
-      const SizedBox(height: 4),
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.white24)),
