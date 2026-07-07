@@ -330,12 +330,34 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
       _showMsg(_t("Arquivo baixado!", "File downloaded!"), Colors.green);
     } else {
       try {
-        final tempDir = await getTemporaryDirectory();
-        final file = await File('${tempDir.path}/$nome.$ext').create();
-        await file.writeAsBytes(bytes);
-        await Share.shareXFiles([XFile(file.path)], text: _t("Exportar Patch DMX", "Export DMX Patch"));
+        // 1. Tenta usar o seletor nativo "Salvar Como" do Android
+        String? path = await FilePicker.platform.saveFile(
+          fileName: "$nome.$ext",
+          type: FileType.any,
+        );
+
+        if (path != null) {
+          final file = File(path);
+          await file.writeAsBytes(bytes);
+          _showMsg(_t("Arquivo salvo com sucesso!", "File saved successfully!"), Colors.green);
+        } else {
+          // 2. Se o usuário cancelar ou o sistema não permitir o "Salvar Como", 
+          // abre o menu de compartilhamento (Share Sheet) como no iPhone
+          final tempDir = await getTemporaryDirectory();
+          final file = await File('${tempDir.path}/$nome.$ext').create();
+          await file.writeAsBytes(bytes);
+          await Share.shareXFiles([XFile(file.path)], text: _t("Exportar Patch DMX", "Export DMX Patch"));
+        }
       } catch (e) {
-        _showMsg(_t("Erro ao exportar arquivo.", "Error exporting file."), Colors.red);
+        // 3. Fallback final: Compartilhamento direto caso o seletor falhe
+        try {
+          final tempDir = await getTemporaryDirectory();
+          final file = await File('${tempDir.path}/$nome.$ext').create();
+          await file.writeAsBytes(bytes);
+          await Share.shareXFiles([XFile(file.path)], text: _t("Exportar Patch DMX", "Export DMX Patch"));
+        } catch (e2) {
+          _showMsg(_t("Erro ao exportar arquivo.", "Error exporting file."), Colors.red);
+        }
       }
     }
   }
