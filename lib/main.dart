@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -12,6 +13,8 @@ import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xls;
 import 'package:file_picker/file_picker.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,7 +47,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
   final TextEditingController _start = TextEditingController(text: "1");
   final TextEditingController _qty = TextEditingController(text: "10");
   final TextEditingController _off = TextEditingController(text: "1");
-  final TextEditingController _id = TextEditingController(text: "1");
+  final TextEditingController _id = TextEditingController(text: "101");
 
   static const List<String> _opcoesNomes = [
     "ATOMIC_RGB", "BEAM", "BLINDER", "BL_RGBW", "BRUT", "BRUT_LED",
@@ -163,6 +166,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
   }
 
   void _executar() {
+    FocusScope.of(context).unfocus(); // Fecha teclado e listas antes de processar
     int start = int.tryParse(_start.text) ?? 1;
     int qty = int.tryParse(_qty.text) ?? 0;
     int off = int.tryParse(_off.text) ?? 1;
@@ -320,6 +324,22 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
     } catch (e) { _showMsg("Erro ao gerar PDF.", Colors.red); }
   }
 
+  Future<void> _compartilharArquivo(String nome, List<int> bytes, String ext, MimeType mime) async {
+    if (kIsWeb) {
+      await FileSaver.instance.saveFile(name: nome, bytes: Uint8List.fromList(bytes), ext: ext, mimeType: mime);
+      _showMsg(_t("Arquivo baixado!", "File downloaded!"), Colors.green);
+    } else {
+      try {
+        final tempDir = await getTemporaryDirectory();
+        final file = await File('${tempDir.path}/$nome.$ext').create();
+        await file.writeAsBytes(bytes);
+        await Share.shareXFiles([XFile(file.path)], text: _t("Exportar Patch DMX", "Export DMX Patch"));
+      } catch (e) {
+        _showMsg(_t("Erro ao exportar arquivo.", "Error exporting file."), Colors.red);
+      }
+    }
+  }
+
   Future<void> _exportarCSV() async {
     List<List<dynamic>> rows = [
       [
@@ -351,8 +371,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
     });
 
     String csv = const ListToCsvConverter(fieldDelimiter: ',').convert(rows);
-    await FileSaver.instance.saveFile(name: "patch_professional", bytes: utf8.encode(csv), ext: "csv", mimeType: MimeType.csv);
-    _showMsg("CSV salvo na pasta Downloads!", Colors.green);
+    await _compartilharArquivo("patch_professional", utf8.encode(csv), "csv", MimeType.csv);
   }
 
   Future<void> _exportarExcel() async {
@@ -379,15 +398,13 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
 
     final List<int> bytes = workbook.saveAsStream();
     workbook.dispose();
-    await FileSaver.instance.saveFile(name: "patch_flashdmx", bytes: Uint8List.fromList(bytes), ext: "xlsx", mimeType: MimeType.microsoftExcel);
-    _showMsg("Excel salvo na pasta Downloads!", Colors.green);
+    await _compartilharArquivo("patch_flashdmx", bytes, "xlsx", MimeType.microsoftExcel);
   }
 
   Future<void> _exportarJSON() async {
     String data = jsonEncode(patchesPorUniverso.map((k, v) => MapEntry(k.toString(), v)));
-    // Usando MimeType.other para forçar o Android a salvar e mostrar o arquivo sem restrições
-    await FileSaver.instance.saveFile(name: "backup_flashdmx", bytes: Uint8List.fromList(utf8.encode(data)), ext: "json", mimeType: MimeType.other);
-    _showMsg("Backup JSON salvo na pasta Downloads!", Colors.green);
+    String timestamp = DateTime.now().toString().replaceAll(" ", "_").replaceAll(":", "-").split(".")[0];
+    await _compartilharArquivo("backup_flashdmx_$timestamp", utf8.encode(data), "json", MimeType.other);
   }
 
   Future<void> _importarJSON() async {
@@ -410,7 +427,7 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
       builder: (c) => Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          _menuItem(Icons.language, _t("Idioma: Português", "Language: English"), () {
+          _menuItem(Icons.language, _t("Idioma: Inglês", "Language: Portuguese"), () {
             setState(() => _isEnglish = !_isEnglish);
             Navigator.pop(c);
           }),
@@ -533,29 +550,47 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
                         child: Column(children: [
                           Row(children: [
                             Expanded(child: Autocomplete<String>(
-                              optionsBuilder: (val) => val.text.isEmpty ? _opcoesNomes : _opcoesNomes.where((opt) => opt.contains(val.text.toUpperCase())),
+                              optionsBuilder: (val) => val.text.isEmpty 
+                                ? const Iterable<String>.empty() 
+                                : _opcoesNomes.where((opt) => opt.contains(val.text.toUpperCase())),
                               onSelected: (sel) {
-                                _nome.text = sel;
-                                FocusScope.of(context).unfocus(); 
+                                setState(() => _nome.text = sel);
+                                FocusScope.of(context).unfocus();
                               },
                               fieldViewBuilder: (ctx, ctrl, fn, sub) {
-                                if (ctrl.text.isEmpty) ctrl.text = _nome.text;
+                                if (ctrl.text.isEmpty && _nome.text.isNotEmpty) ctrl.text = _nome.text;
+                                ctrl.addListener(() => _nome.text = ctrl.text.toUpperCase());
                                 return TextField(
                                   controller: ctrl, 
                                   focusNode: fn, 
                                   style: const TextStyle(color: Colors.white), 
-                                  onChanged: (v) {
-                                    _nome.text = v.toUpperCase();
-                                  },
-                                  onEditingComplete: () {
-                                    sub();
-                                    FocusScope.of(context).unfocus();
-                                  },
-                                  decoration: _inputStyle(_t("Aparelho", "Fixture")).copyWith(
-                                    suffixIcon: const Icon(Icons.arrow_drop_down, color: Colors.grey)
-                                  ),
+                                  onTapOutside: (_) => FocusScope.of(context).unfocus(),
+                                  decoration: _inputStyle(_t("Aparelho", "Fixture")),
                                 );
                               },
+                              optionsViewBuilder: (context, onSelected, options) => Align(
+                                alignment: Alignment.topLeft,
+                                child: Material(
+                                  color: Colors.grey[900],
+                                  elevation: 8,
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: SizedBox(
+                                    width: MediaQuery.of(context).size.width * 0.7,
+                                    child: ListView.builder(
+                                      padding: EdgeInsets.zero,
+                                      shrinkWrap: true,
+                                      itemCount: options.length,
+                                      itemBuilder: (context, index) => ListTile(
+                                        title: Text(options.elementAt(index), style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                                        onTap: () {
+                                          onSelected(options.elementAt(index));
+                                          FocusScope.of(context).unfocus(); // Força fechar ao selecionar
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             )),
                             const SizedBox(width: 15),
                             GestureDetector(
