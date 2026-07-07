@@ -669,7 +669,10 @@ class _PatchScreenState extends State<PatchScreen> with SingleTickerProviderStat
 
   Widget _actionBtn(IconData icon, VoidCallback press, {bool isPdf = false}) {
     return GestureDetector(
-      onTap: press,
+      onTap: () {
+        FocusScope.of(context).unfocus(); // Fecha qualquer teclado ou lista aberta antes da ação
+        press();
+      },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         height: 44, width: 44, // Aumentado para melhor toque
